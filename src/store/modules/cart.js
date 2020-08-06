@@ -1,5 +1,5 @@
 const state = {
-  cartProducts: [],
+  cartProducts: JSON.parse(localStorage.getItem('cart-products')) || [],
 }
 const getters = {
   totalCount(state) {
@@ -7,6 +7,22 @@ const getters = {
   },
   totalPrice(state) {
     return state.cartProducts.reduce((sum, prod) => sum + prod.totalPrice, 0)
+  },
+  checkedCount(state) {
+    return state.cartProducts.reduce((sum, prod) => {
+      if (prod.isChecked) {
+        sum += prod.count
+      }
+      return sum
+    }, 0)
+  },
+  checkedPrice(state) {
+    return state.cartProducts.reduce((sum, prod) => {
+      if (prod.isChecked) {
+        sum += prod.totalPrice
+      }
+      return sum
+    }, 0)
   },
 }
 const mutations = {
@@ -28,6 +44,25 @@ const mutations = {
   deleteFromCart(state, prodId) {
     const index = state.cartProducts.findIndex(item => item.id === prodId)
     index !== -1 && state.cartProducts.splice(index, 1)
+  },
+  updateAllProductChecked(state, checked) {
+    state.cartProducts.forEach(prod => {
+      prod.isChecked = checked
+    })
+  },
+  updateProductChecked(state, { checked, prodId }) {
+    console.log('updateProductChecked: ', checked, prodId)
+    const prod = state.cartProducts.find(prod => prod.id === prodId)
+    if (prod) {
+      prod.isChecked = checked
+    }
+  },
+  updateProduct(state, { prodId, count }) {
+    const prod = state.cartProducts.find(prod => prod.id === prodId)
+    if (prod) {
+      prod.count = count
+      prod.totalPrice = count * prod.price
+    }
   },
 }
 const actions = {}

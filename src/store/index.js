@@ -5,15 +5,25 @@ import cart from './modules/cart'
 
 Vue.use(Vuex)
 
+const myPlugin = store => {
+  console.log('store: ', store)
+  store.subscribe((mutation, state) => {
+    if (mutation.type.startsWith('cart/')) {
+      localStorage.setItem(
+        'cart-products',
+        JSON.stringify(state.cart.cartProducts)
+      )
+    }
+  })
+}
+
 export default new Vuex.Store({
-  state: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
+  state: {},
+  mutations: {},
+  actions: {},
   modules: {
     products,
-    cart
-  }
+    cart,
+  },
+  plugins: [myPlugin],
 })
